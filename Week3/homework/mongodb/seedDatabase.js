@@ -49,3 +49,5 @@ const seedDatabase = async (client) => {
 module.exports = {
   seedDatabase,
 };
+
+
