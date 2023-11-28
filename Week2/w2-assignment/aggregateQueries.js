@@ -11,14 +11,13 @@ const connection = mysql.createConnection({
 // Queries for aggregate functions
 const queries = [
   `SELECT RP.paper_title, COUNT(*) AS num_authors
-   FROM research_Papers RP
-   LEFT JOIN authors A ON RP.author_id = A.author_id
-   GROUP BY RP.paper_title`,
-  `SELECT SUM(RP.paper_id) AS total_papers
-   FROM research_Papers RP
-   JOIN authors A ON RP.author_id = A.author_id
-   WHERE A.gender = 'female'`,
-  // Add other aggregate queries as per Exercise 4 specifications
+  FROM research_papers RP
+  LEFT JOIN authors_papers AP ON RP.paper_id = AP.paper_id
+  GROUP BY RP.paper_title`,
+ `SELECT COUNT(*) AS total_papers
+  FROM research_papers RP
+  WHERE RP.paper_id IN (SELECT DISTINCT paper_id FROM authors_papers)`,
+  
 ];
 
 // Execute each query and print results

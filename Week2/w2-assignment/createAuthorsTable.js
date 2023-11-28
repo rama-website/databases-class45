@@ -17,7 +17,7 @@ connection.query(
     university VARCHAR(255),
     date_of_birth DATE,
     h_index INT,
-    gender VARCHAR(10)
+    gender ENUM ('M', 'F', 'X') -- Using ENUM to restrict gender values to 'M', 'F', or 'X'
   )`,
   function (err, results) {
     if (err) throw err;
@@ -26,3 +26,4 @@ connection.query(
     connection.end();
   }
 );
+

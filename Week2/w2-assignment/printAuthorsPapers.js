@@ -12,7 +12,8 @@ const connection = mysql.createConnection({
 connection.query(
   `SELECT A.*, RP.paper_title
    FROM authors A
-   LEFT JOIN research_Papers RP ON A.author_id = RP.author_id`,
+   LEFT JOIN authors_papers AP ON A.author_id = AP.author_id
+   LEFT JOIN research_papers RP ON AP.paper_id = RP.paper_id`,
   function (err, results) {
     if (err) throw err;
     console.log('Authors and their published papers:');
