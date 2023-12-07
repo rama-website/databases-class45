@@ -15,6 +15,18 @@ Exercise 1: SQL Normalization
 . `Dinners_Venues` (dinner_id, venue_code)
 .`Dinners_Foods` (dinner_id, food_code)
 
+Why Consider "dinner_date" in 1NF?
+The column `dinner_date` is vital for adherence to the First Normal Form (1NF) due to these reasons:
+
+1.Atomicity:
+`dinner_date` holds singular, indivisible date values for each dinner entry in the Dinners table, ensuring atomicity.
+
+2.Single Value Principle:
+It follows the 1NF rule by presenting a single value for each dinner event, preventing the inclusion of multiple values within a single cell.
+
+3.Data Clarity and Simplicity:
+Including `dinner_date` in the Dinners table streamlines queries related to dinner events and their associated dates, avoiding complex joins and facilitating easier data retrieval.
+
 //diagram
 +----------------+      +------------------+      +----------------+      +----------------+      +---------------+
          |   Members      |      |   Dinners        |      |   Venues       |      |   Foods        |      |   Members     |
