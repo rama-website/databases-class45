@@ -26,6 +26,8 @@ It follows the 1NF rule by presenting a single value for each dinner event, prev
 
 3.Data Clarity and Simplicity:
 Including `dinner_date` in the Dinners table streamlines queries related to dinner events and their associated dates, avoiding complex joins and facilitating easier data retrieval.
+The "dinner_date" column represents a singular, indivisible attribute for each dinner entry in the Dinners table.
+This ensures that each cell contains only one value, meeting the atomicity requirement of 1NF.
 
 //diagram
 +----------------+      +------------------+      +----------------+      +----------------+      +---------------+
