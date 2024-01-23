@@ -1,44 +1,47 @@
 
-// Function to transfer money from one account to another
-function transferMoney(accounts, fromAccount, toAccount, amount, remark) {
-    const fromAcc = accounts.find(acc => acc.account_number === fromAccount);
-    const toAcc = accounts.find(acc => acc.account_number === toAccount);
-  
+const { MongoClient } = require('mongodb');
+require('dotenv').config();
+
+async function transferMoney(accounts, fromAccount, toAccount, amount, remark) {
+  const client = new MongoClient(process.env.MONGODB_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
+
+  try {
+    await client.connect();
+    const session = client.startSession();
+    session.startTransaction();
+
+    const fromAcc = await accounts.findOne({ account_number: fromAccount }, { session });
+    const toAcc = await accounts.findOne({ account_number: toAccount }, { session });
+
     if (!fromAcc || !toAcc) {
       console.error('Accounts not found.');
       return;
     }
-  
+
     if (fromAcc.balance < amount) {
       console.error('Insufficient balance.');
       return;
     }
-  
-    fromAcc.balance -= amount;
-    toAcc.balance += amount;
-  
-    const latestFromChangeNumber = fromAcc.account_changes.length > 0 ? fromAcc.account_changes[fromAcc.account_changes.length - 1].change_number : 0;
-    const latestToChangeNumber = toAcc.account_changes.length > 0 ? toAcc.account_changes[toAcc.account_changes.length - 1].change_number : 0;
-  
-    fromAcc.account_changes.push({
-      change_number: latestFromChangeNumber + 1,
-      amount: -amount,
-      changed_date: new Date(),
-      remark
-    });
-  
-    toAcc.account_changes.push({
-      change_number: latestToChangeNumber + 1,
-      amount,
-      changed_date: new Date(),
-      remark
-    });
-  
+
+    await accounts.updateOne({ _id: fromAcc._id }, { $inc: { balance: -amount }, $push: { account_changes: { amount: -amount, changed_date: new Date(), remark } } }, { session });
+    await accounts.updateOne({ _id: toAcc._id }, { $inc: { balance: amount }, $push: { account_changes: { amount, changed_date: new Date(), remark } } }, { session });
+
+    await session.commitTransaction();
     console.log(`Transfer of ${amount} from account ${fromAccount} to ${toAccount} successful.`);
-    return accounts;
+  } catch (error) {
+    console.error('Error:', error);
+    await session.abortTransaction();
+  } finally {
+    session.endSession();
+    await client.close();
   }
-  
-  module.exports = {
-    transferMoney
-  };
-  
+
+  return accounts;
+}
+
+module.exports = {
+  transferMoney
+};
